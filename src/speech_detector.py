@@ -35,7 +35,8 @@ class SpeechDetector:
         self.off_th = config["speech"].get("vocalness_threshold_off", 0.30)
         self.off_hold_ms = config["speech"].get("off_hold_ms", 200)        # require this ms of continuous below to clear
         self.hysteresis_state = False
-        self._last_above_ts = 0.0
+        # initialize last_above timestamp to now to avoid immediate clear on startup
+        self._last_above_ts = time.time()
         self._last_change_ts = time.time()
 
     def compute_vocalness(self, raw_bytes):
