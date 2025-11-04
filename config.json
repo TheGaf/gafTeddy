@@ -10,12 +10,13 @@
     "rms_threshold": 0.02,
     "zcr_threshold": 0.05,
     "smoothing_alpha": 0.35,
-    "min_open_time_ms": 120,
+    "min_open_time_ms": 160,
     "idle_timeout_s": 10,
     "goertzel_freqs": [300, 500, 1000, 1500, 2500, 3200],
     "vocalness_weights": { "rms": 0.6, "centroid": 0.3, "zcr": 0.1 },
     "vocalness_threshold_on": 0.45,
-    "vocalness_threshold_off": 0.30
+    "vocalness_threshold_off": 0.30,
+    "off_hold_ms": 200
   },
   "servos": {
     "pulse_min_ms": 0.5,
@@ -37,7 +38,10 @@
   },
   "blink": {
     "mean_interval_s": 6.0,
-    "duration_ms": 160
+    "duration_ms": 160,
+    "suppress_mouth_on": 0.25,
+    "suppress_mouth_off": 0.10,
+    "suppress_off_ms": 200
   },
   "logging": {
     "level": "INFO",
