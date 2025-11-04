@@ -5,10 +5,12 @@ Generates a pure sine and prints computed vocalness pieces.
 """
 import math
 import struct
+import os
 from src.speech_detector import SpeechDetector
 from src.config import load_config
 
-cfg = load_config("config.json")
+# load project-root config regardless of current working dir
+cfg = load_config(os.path.join(os.path.dirname(__file__), "..", "config.json"))
 sd = SpeechDetector(cfg)
 
 def make_sine(freq, sr=44100, dur=0.1, amp=0.5):
@@ -24,4 +26,3 @@ if __name__ == "__main__":
         raw = make_sine(f)
         info = sd.compute_vocalness(raw)
         print(f"freq={f} -> vocalness={info['vocalness']:.3f} rms={info['rms']:.4f} centroid={info['centroid']:.3f}")
-        
