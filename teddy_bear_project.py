@@ -33,9 +33,18 @@ def main():
             log.info("KeyboardInterrupt received, stopping")
             sm.stop()
     elif cmd == "status":
-        sm = TeddyStateMachine(config)
-        status = sm.get_status()
-        print(json.dumps(status, indent=2))
+        # Prefer reading telemetry file if available to avoid starting hardware threads
+        status_path = config.get("telemetry", {}).get("status_path", "/tmp/teddy_status.json")
+        if os.path.exists(status_path):
+            try:
+                with open(status_path, "r") as f:
+                    data = json.load(f)
+                print(json.dumps(data, indent=2))
+            except Exception as e:
+                print("Failed to read telemetry file:", e)
+        else:
+            print("No telemetry status file found at", status_path)
+            print("Start the daemon first (python3 teddy_bear_project.py start) to generate status.")
     elif cmd == "calibrate":
         import calibrate_cli
         calibrate_cli.run_calibrator(CONFIG_PATH)
