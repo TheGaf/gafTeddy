@@ -1,0 +1,54 @@
+{
+  "bt_device_mac": "",
+  "audio": {
+    "device": "hw:Loopback,1,0",
+    "sample_rate": 44100,
+    "channels": 1,
+    "frame_size": 2048
+  },
+  "speech": {
+    "rms_threshold": 0.02,
+    "zcr_threshold": 0.05,
+    "smoothing_alpha": 0.35,
+    "min_open_time_ms": 120,
+    "idle_timeout_s": 10,
+    "goertzel_freqs": [300, 500, 1000, 1500, 2500, 3200],
+    "vocalness_weights": { "rms": 0.6, "centroid": 0.3, "zcr": 0.1 },
+    "vocalness_threshold_on": 0.45,
+    "vocalness_threshold_off": 0.30
+  },
+  "servos": {
+    "pulse_min_ms": 0.5,
+    "pulse_max_ms": 2.5,
+    "max_speed_deg_per_s": { "mouth": 180, "eyes": 90 },
+    "eye_close_duration_s": 2.5,
+    "mouth": {
+      "pin": 18,
+      "min_angle": 20,
+      "max_angle": 120,
+      "neutral": 20
+    },
+    "eyes": {
+      "pin": 23,
+      "min_angle": 10,
+      "max_angle": 90,
+      "neutral": 10
+    }
+  },
+  "blink": {
+    "mean_interval_s": 6.0,
+    "duration_ms": 160
+  },
+  "logging": {
+    "level": "INFO",
+    "file": "/var/log/teddy.log",
+    "throttle_s": 5.0
+  },
+  "main_loop": {
+    "tick_s": 0.04
+  },
+  "telemetry": {
+    "status_path": "/tmp/teddy_status.json",
+    "write_interval_s": 1.0
+  }
+}

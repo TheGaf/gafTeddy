@@ -1,0 +1,13 @@
+[Unit]
+Description=Teddy Bear state machine
+After=network.target
+
+[Service]
+Type=simple
+WorkingDirectory=/home/pi/teddy_bear_project_round2
+ExecStart=/usr/bin/python3 /home/pi/teddy_bear_project_round2/teddy_bear_project.py start
+Restart=on-failure
+User=pi
+
+[Install]
+WantedBy=multi-user.target
