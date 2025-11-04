@@ -9,6 +9,9 @@ from src.servo_controller import ServoController
 def main():
     mouth = ServoController(pin=18, min_angle=20, max_angle=120, neutral=20)
     eyes = ServoController(pin=23, min_angle=10, max_angle=90, neutral=10)
+    # explicitly start servo threads for the simulator
+    mouth.start()
+    eyes.start()
     try:
         while True:
             print("Opening mouth")
