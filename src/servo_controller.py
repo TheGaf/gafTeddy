@@ -2,7 +2,7 @@
 """
 Servo controller with pigpio if available, otherwise simulated.
 Implements symmetric ease-in / ease-out when a duration is specified.
-Exposes set_target_angle(angle, duration_s=None) and stop().
+Exposes start(), set_target_angle(angle, duration_s=None) and stop().
 """
 import math
 import time
@@ -33,10 +33,9 @@ class ServoController:
         self._move_start_ts = None
         self._move_duration = None
 
-        # Thread control
+        # Thread control (do NOT start thread here)
         self._stop_event = Event()
-        self._thread = Thread(target=self._thread_run, daemon=True)
-        self._thread.start()
+        self._thread = None
 
         # pigpio handle if available
         self._pi = None
@@ -47,6 +46,15 @@ class ServoController:
                     self._pi = None
             except Exception:
                 self._pi = None
+
+    def start(self):
+        """Start the background servo worker thread. Safe to call multiple times."""
+        if self._thread and self._thread.is_alive():
+            return
+        self._stop_event.clear()
+        self._thread = Thread(target=self._thread_run, daemon=True)
+        self._thread.start()
+        self.log.debug("Servo(pin=%s) thread started", self.pin)
 
     def _angle_to_pulse(self, angle):
         # map angle to microseconds
@@ -126,14 +134,18 @@ class ServoController:
                 time.sleep(0.05)
 
     def stop(self):
+        """Stop the background thread and release pigpio resources if any."""
         self._stop_event.set()
         try:
-            self._thread.join(timeout=0.5)
+            if self._thread:
+                self._thread.join(timeout=0.5)
         except Exception:
             pass
+        self._thread = None
         if self._pi:
             try:
                 self._pi.set_servo_pulsewidth(self.pin, 0)
                 self._pi.stop()
             except Exception:
                 pass
+        self.log.debug("Servo(pin=%s) stopped", self.pin)
