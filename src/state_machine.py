@@ -24,6 +24,7 @@ class TeddyStateMachine:
         mouth_cfg = serv_cfg.get("mouth", {})
         eyes_cfg = serv_cfg.get("eyes", {})
 
+        # Create controllers but DO NOT start threads here
         self.mouth = ServoController(pin=mouth_cfg.get("pin", 18),
                                      min_angle=mouth_cfg.get("min_angle", 20),
                                      max_angle=mouth_cfg.get("max_angle", 120),
@@ -74,16 +75,43 @@ class TeddyStateMachine:
         self._last_vocalness = 0.0
 
     def start_subsystems(self):
+        # Start servo threads first so blink controller has servo state available
+        try:
+            self.mouth.start()
+        except Exception as e:
+            self.log.debug("Failed to start mouth servo: %s", e)
+        try:
+            self.eyes.start()
+        except Exception as e:
+            self.log.debug("Failed to start eyes servo: %s", e)
+        # Start audio and BT
         self.audio.start()
         self.bt.start()
+        # Start blinker after servos
         self.blinker.start()
 
     def stop_subsystems(self):
-        self.audio.stop()
-        self.bt.stop()
-        self.blinker.stop()
-        self.mouth.stop()
-        self.eyes.stop()
+        # stop in reverse order
+        try:
+            self.blinker.stop()
+        except Exception:
+            pass
+        try:
+            self.audio.stop()
+        except Exception:
+            pass
+        try:
+            self.bt.stop()
+        except Exception:
+            pass
+        try:
+            self.mouth.stop()
+        except Exception:
+            pass
+        try:
+            self.eyes.stop()
+        except Exception:
+            pass
 
     def _write_status(self):
         try:
