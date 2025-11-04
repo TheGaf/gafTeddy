@@ -29,6 +29,10 @@ def run_calibrator(config_path):
                            pulse_min_ms=servos_cfg.get("pulse_min_ms", 0.5),
                            pulse_max_ms=servos_cfg.get("pulse_max_ms", 2.5),
                            max_speed_deg_per_s=servos_cfg.get("max_speed_deg_per_s", {}).get("eyes", 90))
+    # Start servo threads for calibrator
+    mouth.start()
+    eyes.start()
+
     print("Calibration CLI")
     print("Commands: select [mouth|eyes], up, down, setneutral, save, quit")
     selected = "mouth"
@@ -53,8 +57,11 @@ def run_calibrator(config_path):
                 cfg["neutral"] = max(cfg["min_angle"], cfg["neutral"] - 2)
                 controller.set_target_angle(cfg["neutral"], duration_s=0.2)
             elif cmd == "setneutral":
-                cfg["neutral"] = int(input("new neutral: "))
-                controller.set_target_angle(cfg["neutral"], duration_s=0.2)
+                try:
+                    cfg["neutral"] = int(input("new neutral: "))
+                    controller.set_target_angle(cfg["neutral"], duration_s=0.2)
+                except Exception:
+                    print("Invalid value")
             elif cmd == "save":
                 save_config(config_path, config)
                 print("Saved", config_path)
